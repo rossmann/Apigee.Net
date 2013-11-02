@@ -1,4 +1,5 @@
-﻿namespace Apigee.Net.Models
+﻿using System.Collections.Generic;
+namespace Apigee.Net.Models
 {
     public class ApigeeUserModel
     {
@@ -14,5 +15,6 @@
         public string Picture { get; set; }
         public string Tel { get; set; }
         public string Url { get; set; }
+        public IDictionary<string, string> CustomProperties {get;set;}
     }
 }

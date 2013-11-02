@@ -88,7 +88,48 @@ namespace Apigee.Net
         #endregion
 
         #region Account Management
+        private ApigeeUserModel SetUserInfo(JToken jsonData, string[] additionalValues = null)
+        {
 
+            IDictionary<string, string> extraEntities = new Dictionary<string, string>();
+            if (additionalValues != null)
+            {
+                foreach (string customEntity in additionalValues)
+                {
+                    extraEntities.Add(customEntity, (jsonData[customEntity] ?? "").ToString());
+                }
+            }
+        return new ApigeeUserModel
+            {
+                Uuid = (jsonData["uuid"] ?? "").ToString(),
+                Username = (jsonData["username"] ?? "").ToString(),
+                Password = (jsonData["password"] ?? "").ToString(),
+                Lastname = (jsonData["lastname"] ?? "").ToString(),
+                Firstname = (jsonData["firstname"] ?? "").ToString(),
+                Title = (jsonData["title"] ?? "").ToString(),
+                Email = (jsonData["Email"] ?? "").ToString(),
+                Tel = (jsonData["tel"] ?? "").ToString(),
+                HomePage = (jsonData["homepage"] ?? "").ToString(),
+                Bday = (jsonData["bday"] ?? "").ToString(),
+                Picture = (jsonData["picture"] ?? "").ToString(),
+                Url = (jsonData["url"] ?? "").ToString(),
+                CustomProperties = extraEntities
+
+            };
+            
+        }
+        //UUID can also be username apigee supports both after /users/
+        public ApigeeUserModel GetUser(string uuid,string[] additionalValues=null)
+        {
+            var rawResults = PerformRequest<string>("/users/" + uuid);
+            var jsonData = GetEntitiesFromJson(rawResults);
+            if (jsonData.Count() > 1)
+            {
+                throw new Exception("Multiple Results Returned Where Only One Was Expected");
+            }
+            return SetUserInfo(jsonData[0], additionalValues);
+            
+        }
         public List<ApigeeUserModel> GetUsers()
         {
             var rawResults = PerformRequest<string>("/users");
@@ -97,20 +138,7 @@ namespace Apigee.Net
             List<ApigeeUserModel> results = new List<ApigeeUserModel>();
             foreach (var usr in users)
             {
-                results.Add(new ApigeeUserModel { 
-                    Uuid = (usr["uuid"] ?? "").ToString(),
-                    Username = (usr["username"] ?? "").ToString(),
-                    Password = (usr["password"] ?? "").ToString(),
-                    Lastname = (usr["lastname"] ?? "").ToString(),
-                    Firstname = (usr["firstname"] ?? "").ToString(),
-                    Title = (usr["title"] ?? "").ToString(),
-                    Email = (usr["Email"] ?? "").ToString(),
-                    Tel = (usr["tel"] ?? "").ToString(),
-                    HomePage = (usr["homepage"] ?? "").ToString(),
-                    Bday = (usr["bday"] ?? "").ToString(),
-                    Picture = (usr["picture"] ?? "").ToString(),
-                    Url = (usr["url"] ?? "").ToString()
-                });
+                results.Add(SetUserInfo(usr));
             }
 
             return results;

@@ -13,27 +13,27 @@ namespace Apigee.Net.Tests.ApigeeClientTests
         ApigeeClient aClient = new ApigeeClient("http://api.usergrid.com/sympletech1/sandbox/");
 
         [Test]
-        public void GetUsersTest()
+        public void ShouldGetListOfAllUsers()
         {
             var results = aClient.GetUsers();
             Assert.IsNotNull(results);
         }
 
         [Test]
-        public void CreateAccountTest()
+        public void ShouldCreateAccount()
         {
-            string un = "apigee_" + Guid.NewGuid();
+            string username = "apigee_" + Guid.NewGuid();
             var result = aClient.CreateAccount(new ApigeeUserModel {
-                Username = un,
+                Username = username,
                 Password = "abc123",
-                Email = un + "@sympletech.com"
+                Email = username + "@sympletech.com"
             });
 
-            Assert.IsNotEmpty(result.Uuid);
+            Assert.IsNotEmpty(result);
         }
 
         [Test]
-        public void UpdateAccountTest()
+        public void ShouldUpdateAccount()
         {
             string un = "bobby";
             var result = aClient.UpdateAccount(new ApigeeUserModel
@@ -43,10 +43,16 @@ namespace Apigee.Net.Tests.ApigeeClientTests
                 Email = un + "@sympletech.com"
             });
         }
-
+        [Test]
+        public void ShouldRetriveTestUser() {
+            string expectedUserName = "bobby";
+            var actualUserName = aClient.GetUser("bobby").Username;
+            StringAssert.AreEqualIgnoringCase(expectedUserName, actualUserName);
+        
+        }
 
         [Test]
-        public void GetTokenTest()
+        public void ShouldRetriveToken()
         {
             var result = aClient.GetToken("apigee_58461c11-6632-4980-9130-cb43fc5d0dc6", "abc123");
             Assert.IsNotNull(result);
